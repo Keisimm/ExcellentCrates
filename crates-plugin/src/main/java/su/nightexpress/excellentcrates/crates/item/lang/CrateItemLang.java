@@ -56,6 +56,12 @@ public final class CrateItemLang implements LangContainer {
             "You must hold a crate item."
         );
 
+    public static final MessageLocale PIPELINE_NOT_ENOUGH_ITEMS = LangEntry
+        .builder("crates.item.pipeline.not_enough_items")
+        .chatMessage(Sound.ENTITY_VILLAGER_NO,
+            "You do not have enough crate items."
+        );
+
     public static final MessageLocale PIPELINE_ITEM_TAKEN = LangEntry
         .builder("crates.item.pipeline.item_taken")
         .chatMessage(Sound.ENTITY_ITEM_PICKUP,

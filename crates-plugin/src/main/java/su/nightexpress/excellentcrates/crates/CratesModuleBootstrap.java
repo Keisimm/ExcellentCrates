@@ -119,6 +119,12 @@ public final class CratesModuleBootstrap extends CrateModuleBootstrap {
         );
 
         pipelineContext.api.registerStage(
+            PipelinePhase.PRE_ROLL,
+            PipelineStageOrder.PRE_ROLL_ITEM_SELECTION,
+            itemContext.getPreRollStage()
+        );
+
+        pipelineContext.api.registerStage(
             PipelinePhase.PRE_PROCESS,
             PipelineStageOrder.PRE_PROCESS_CRATE_QUOTA,
             quotaContext.getApplyPipelineStage()

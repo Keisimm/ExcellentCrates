@@ -2,6 +2,9 @@ package su.nightexpress.excellentcrates.crates.pipeline;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
@@ -26,6 +29,7 @@ public class CratePipelineService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CratePipelineService.class);
 
+    private final Set<UUID>                             activePlayers = ConcurrentHashMap.newKeySet();
     private final TinyRegistry<RegisteredPipelineStage> stages;
     private final TinyRegistry<PipelineExecutor>        executors;
     private final TinyRegistry<PipelineProcessor>       processors;
@@ -58,6 +62,11 @@ public class CratePipelineService {
     }
 
     public void startPipeline(Player player, Crate crate, @Nullable Consumer<PipelineContext> consumer) {
+        UUID playerId = player.getUniqueId();
+        if (!this.activePlayers.add(playerId)) {
+            return;
+        }
+
         PipelineContext context = new DefaultPipelineContext(crate);
 
         if (consumer != null) {
@@ -66,6 +75,7 @@ public class CratePipelineService {
 
         List<PipelineStage> stages = this.compileStages();
         if (stages.isEmpty()) {
+            this.activePlayers.remove(playerId);
             LOGGER.error("Can not start pipeline for crate '{}': No pipeline stages available.", crate.id());
             return;
         }
@@ -73,6 +83,7 @@ public class CratePipelineService {
         CratePipelinePreStartEvent preStartEvent = new CratePipelinePreStartEvent(player, crate, context, stages);
         Bukkit.getPluginManager().callEvent(preStartEvent);
         if (preStartEvent.isCancelled()) {
+            this.activePlayers.remove(playerId);
             return;
         }
 
@@ -84,9 +95,11 @@ public class CratePipelineService {
                               PipelineContext context,
                               List<PipelineStage> stages,
                               int index) {
+        UUID playerId = player.getUniqueId();
         if (index >= stages.size()) {
             PipelineProcessor highestPriorityProcessor = this.selectHighestPriorityProcessor(crate, context);
             if (highestPriorityProcessor == null) {
+                this.activePlayers.remove(playerId);
                 LOGGER.error("Can not finish pipeline for crate '{}': No pipeline processor available.",
                     crate.id()
                 );
@@ -94,7 +107,12 @@ public class CratePipelineService {
             }
 
             highestPriorityProcessor.process(player, context, () -> {
-                this.executors.forEach(executor -> executor.execute(player, crate, context));
+                try {
+                    this.executors.forEach(executor -> executor.execute(player, crate, context));
+                }
+                finally {
+                    this.activePlayers.remove(playerId);
+                }
             });
             return;
         }
@@ -110,7 +128,7 @@ public class CratePipelineService {
 
             @Override
             public void abort() {
-                // Pipeline aborted, do nothing
+                activePlayers.remove(playerId);
             }
         });
     }

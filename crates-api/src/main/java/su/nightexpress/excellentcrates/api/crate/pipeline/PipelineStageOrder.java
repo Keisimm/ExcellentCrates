@@ -11,6 +11,7 @@ public final class PipelineStageOrder {
     public static final int PRE_ROLL_CRATE_QUOTA       = 1000;
     public static final int PRE_ROLL_REWARD_VALIDATION = 1500;
     public static final int PRE_ROLL_COST_SELECTION    = 2000;
+    public static final int PRE_ROLL_ITEM_SELECTION    = 2500;
     public static final int PRE_ROLL_BATCH_SELECTION   = 5000;
 
     public static final int ROLL_REWARDS   = 100;

@@ -48,7 +48,9 @@ public class BatchUIController implements BatchSelectionHandler {
                         return;
                     }
 
-                    isChosen.set(true);
+                    if (!isChosen.compareAndSet(false, true)) {
+                        return;
+                    }
                     player.closeInventory();
 
                     callback.proceed(selectedAmount);

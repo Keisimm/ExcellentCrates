@@ -45,13 +45,16 @@ public class SelectiveUIController {
         RewardSelectionMenuContext menuContext = new RewardSelectionMenuContext(crateRef, pickContext, isCompleted,
             onAbort,
             pick -> {
+                if (!isCompleted.compareAndSet(false, true)) {
+                    return;
+                }
                 ActionResult testPick = this.pickService.validatePick(player, crate, pick);
                 if (testPick.failure()) {
                     testPick.handleFeedback((locale, ctx) -> this.dispatcher.sendBase(player, crate, locale, ctx));
+                    callback.cancel();
                     return;
                 }
 
-                isCompleted.set(true);
                 player.closeInventory();
 
                 callback.proceed(pick);

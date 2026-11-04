@@ -29,6 +29,7 @@ import su.nightexpress.excellentcrates.crates.item.interact.CrateItemInteraction
 import su.nightexpress.excellentcrates.crates.item.interact.controller.CrateItemInteractionController;
 import su.nightexpress.excellentcrates.crates.item.lang.CrateItemLang;
 import su.nightexpress.excellentcrates.crates.item.permission.CrateItemPerms;
+import su.nightexpress.excellentcrates.crates.item.pipeline.CrateItemPreRollStage;
 import su.nightexpress.excellentcrates.crates.item.pipeline.CrateItemTakeStage;
 import su.nightexpress.excellentcrates.crates.item.pipeline.CrateItemValidationStage;
 import su.nightexpress.excellentcrates.crates.item.settings.ItemSettings;
@@ -48,6 +49,7 @@ public class CrateItemBootstrapContext extends NamedBootstrapContext {
     public final CrateItemAPI     api;
 
     private final CrateEditorExtension     editorExtension;
+    private final CrateItemPreRollStage    preRollStage;
     private final CrateItemValidationStage validationStage;
     private final CrateItemTakeStage       takeStage;
     private final List<CrateCommand>       commands;
@@ -86,6 +88,7 @@ public class CrateItemBootstrapContext extends NamedBootstrapContext {
 
         this.editorExtension = editorContext.extension;
 
+        this.preRollStage = new su.nightexpress.excellentcrates.crates.item.pipeline.CrateItemPreRollStage(itemService);
         this.validationStage = new CrateItemValidationStage(itemService, dispatcher);
         this.takeStage = new CrateItemTakeStage(itemService, dispatcher);
 
@@ -96,6 +99,10 @@ public class CrateItemBootstrapContext extends NamedBootstrapContext {
 
     public CrateEditorExtension getEditorExtension() {
         return this.editorExtension;
+    }
+
+    public su.nightexpress.excellentcrates.crates.item.pipeline.CrateItemPreRollStage getPreRollStage() {
+        return this.preRollStage;
     }
 
     public CrateItemValidationStage getValidationStage() {

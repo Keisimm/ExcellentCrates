@@ -54,16 +54,22 @@ public class RewardLimitsAlternativePipelineStage implements PipelineStage {
 
         List<PipelineReward> rewards = rewardsComponent.getTargetRewards();
 
+        java.util.Map<RewardId, Integer> rolledInBatch = new java.util.HashMap<>();
+
         for (PipelineReward reward : rewards) {
             Reward rolled = reward.getRolled();
+            int previouslyRolled = rolledInBatch.getOrDefault(rolled.getId(), 0);
 
             LimitRemaining remaining = this.limitService.getRemainingRolls(player, rolled);
-            if (remaining.isExhausted()) {
+            if (remaining.isExhausted() || (!remaining.isUnlimited() && remaining.getRemaining() <= previouslyRolled)) {
                 if (!this.handleAlternativeReward(reward, rolled)) {
                     this.dispatcher.sendBase(player, rolled, RewardLimitsLang.ALTERNATIVE_REWARD_EVALUATION_FAILED);
                     chain.abort();
-                    break;
+                    return;
                 }
+            }
+            else {
+                rolledInBatch.put(rolled.getId(), previouslyRolled + 1);
             }
         }
 

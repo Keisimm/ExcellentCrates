@@ -40,8 +40,17 @@ public class CrateItemValidationStage implements PipelineStage {
             return;
         }
 
-        if (Players.countItem(player, inv -> this.itemService.isCrateItem(inv, crate)) == 0) {
+        int available = Players.countItem(player, inv -> this.itemService.isCrateItem(inv, crate));
+        if (available == 0) {
             this.dispatcher.sendBase(player, crate, CrateItemLang.PIPELINE_NO_ITEM_FOUND);
+            chain.abort();
+            return;
+        }
+
+        su.nightexpress.excellentcrates.api.crate.batch.BatchPipelineComponent batchComponent = context.getComponentOrNull(PipelineComponentKeys.BATCH);
+        int batchAmount = batchComponent != null ? batchComponent.getSelectedAmount() : 1;
+        if (available < batchAmount) {
+            this.dispatcher.sendBase(player, crate, CrateItemLang.PIPELINE_NOT_ENOUGH_ITEMS);
             chain.abort();
             return;
         }

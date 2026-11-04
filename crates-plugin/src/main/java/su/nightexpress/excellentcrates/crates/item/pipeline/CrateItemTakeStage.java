@@ -47,7 +47,21 @@ public class CrateItemTakeStage implements PipelineStage {
         int batchAmount = batchComponent != null ? batchComponent.getSelectedAmount() : 1;
 
         if (batchAmount > 0) {
+            int before = Players.countItem(player, inv -> this.itemService.isCrateItem(inv, crate));
+            if (before < batchAmount) {
+                this.dispatcher.sendBase(player, crate, CrateItemLang.PIPELINE_NOT_ENOUGH_ITEMS);
+                chain.abort();
+                return;
+            }
+
             Players.takeItem(player, inv -> this.itemService.isCrateItem(inv, crate), batchAmount);
+
+            int after = Players.countItem(player, inv -> this.itemService.isCrateItem(inv, crate));
+            if (before - after < batchAmount) {
+                this.dispatcher.sendBase(player, crate, CrateItemLang.PIPELINE_NOT_ENOUGH_ITEMS);
+                chain.abort();
+                return;
+            }
 
             this.dispatcher.sendBase(player, crate, CrateItemLang.PIPELINE_ITEM_TAKEN, ctx -> ctx
                 .with(SharedPlaceholders.ITEM, () -> ItemUtil.getNameSerialized(itemStack))

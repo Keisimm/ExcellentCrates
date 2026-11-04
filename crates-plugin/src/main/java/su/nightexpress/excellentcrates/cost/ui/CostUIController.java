@@ -187,6 +187,9 @@ public class CostUIController implements CostSelectionHandler, CrateFeedbackHand
 
         return this.handleFeedback(player, this.uiService.openOptionsMenu(player, new CostOptionsMenuContext(
             crateId, selectedTypeId, optionIds, isChosen, backwardNavigator, callback::cancel, selectedOptionId -> {
+                if (!isChosen.compareAndSet(false, true)) {
+                    return;
+                }
                 // Check if the player can afford the selected option
                 // The batch amount is processed after the cost selection stage, so we check affordability for a single unit here.
                 ActionResult affordance = this.costService.checkAffordance(player, crate, selectedType,
@@ -197,7 +200,6 @@ public class CostUIController implements CostSelectionHandler, CrateFeedbackHand
                     return;
                 }
 
-                isChosen.set(true);
                 player.closeInventory();
 
                 callback.proceed(new DefaultCostTypeOption(selectedTypeId, selectedOptionId));
