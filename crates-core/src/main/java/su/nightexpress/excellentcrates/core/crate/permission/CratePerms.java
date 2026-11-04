@@ -17,6 +17,7 @@ public final class CratePerms {
     public static final Permission COMMAND_EDITOR      = COMMAND.create("editor");
     public static final Permission COMMAND_OPEN        = COMMAND.create("open");
     public static final Permission COMMAND_OPEN_OTHERS = COMMAND.create("open.others");
+    public static final Permission COMMAND_REDEEM      = COMMAND.create("redeem");
 
     public static final Permission EDITOR_CORE = EDITOR.create("core");
 

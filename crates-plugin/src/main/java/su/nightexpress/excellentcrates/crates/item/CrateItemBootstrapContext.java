@@ -7,6 +7,8 @@ import java.util.List;
 
 import org.jspecify.annotations.NullMarked;
 
+import org.jspecify.annotations.Nullable;
+
 import su.nightexpress.engine.bootstrap.context.NamedBootstrapContext;
 import su.nightexpress.engine.id.Identifier;
 import su.nightexpress.engine.ui.CoreUIService;
@@ -34,6 +36,7 @@ import su.nightexpress.excellentcrates.crates.item.pipeline.CrateItemTakeStage;
 import su.nightexpress.excellentcrates.crates.item.pipeline.CrateItemValidationStage;
 import su.nightexpress.excellentcrates.crates.item.settings.ItemSettings;
 import su.nightexpress.nightcore.bridge.key.AdaptedKey;
+import su.nightexpress.nightcore.userdata.UserDataManager;
 
 @NullMarked
 public class CrateItemBootstrapContext extends NamedBootstrapContext {
@@ -54,9 +57,13 @@ public class CrateItemBootstrapContext extends NamedBootstrapContext {
     private final CrateItemTakeStage       takeStage;
     private final List<CrateCommand>       commands;
 
+    @Nullable
+    private CratePackageService packageService;
+
     public CrateItemBootstrapContext(CratesPlugin plugin,
                                      CoreUIService coreUI,
                                      CrateMessageDispatcher dispatcher,
+                                     UserDataManager userDataService,
                                      CrateRegistry crates,
                                      CrateInteractionService interactionService) {
         super(ID, NAME);
@@ -93,8 +100,16 @@ public class CrateItemBootstrapContext extends NamedBootstrapContext {
         this.takeStage = new CrateItemTakeStage(itemService, dispatcher);
 
         this.commands.add(new CrateItemGetCommand(itemService, dispatcher));
-        this.commands.add(new CrateItemGiveCommand(itemService, dispatcher));
+        this.commands.add(new CrateItemGiveCommand(itemService, () -> this.packageService, userDataService, dispatcher));
         this.commands.add(new CrateItemDropCommand(itemService, dispatcher));
+    }
+
+    public void setPackageService(CratePackageService packageService) {
+        this.packageService = packageService;
+    }
+
+    public @Nullable CratePackageService getPackageService() {
+        return this.packageService;
     }
 
     public CrateEditorExtension getEditorExtension() {

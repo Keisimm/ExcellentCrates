@@ -17,6 +17,7 @@ import su.nightexpress.excellentcrates.api.key.registry.KeyRegistry;
 import su.nightexpress.excellentcrates.core.bootstrap.CrateModuleBootstrap;
 import su.nightexpress.excellentcrates.keys.api.DefaultKeysAPI;
 import su.nightexpress.excellentcrates.keys.balance.KeyBalanceBootstrapContext;
+import su.nightexpress.excellentcrates.crates.item.CratePackageService;
 import su.nightexpress.excellentcrates.keys.command.KeyCommandBootstrapContext;
 import su.nightexpress.excellentcrates.keys.common.base.KeyBaseBootstrapContext;
 import su.nightexpress.excellentcrates.keys.config.KeyConfigBootstrapContext;
@@ -79,7 +80,9 @@ public final class KeysModuleBootstrap extends CrateModuleBootstrap {
         );
 
         KeyBalanceBootstrapContext balanceContext = new KeyBalanceBootstrapContext(
-            plugin, dispatcher, userDataService, keys, storageContext.storageService, itemContext.itemService
+            plugin, dispatcher, userDataService, keys, storageContext.storageService, itemContext.itemService,
+            () -> dependencies.crateRegistry(),
+            () -> dependencies.dispatcher()
         );
 
         this.registerComponent(configContext);
@@ -119,6 +122,9 @@ public final class KeysModuleBootstrap extends CrateModuleBootstrap {
         this.bridge.requireAvailable(CoreServices.CRATES, cratesApi -> {
             cratesApi.editor().registerExtension(costEditorContext.getEditorExtension());
             cratesApi.data().registerExtension(costComponentContext.getDataExtension());
+
+            CratePackageService packageService = new CratePackageService(plugin, cratesApi.items(), balanceContext.api);
+            balanceContext.setPackageService(packageService);
         });
 
         this.bridge.onAvailable(CoreServices.COST, costApi -> {

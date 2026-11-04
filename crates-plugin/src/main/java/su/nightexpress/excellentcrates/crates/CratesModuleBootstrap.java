@@ -20,6 +20,7 @@ import su.nightexpress.excellentcrates.crates.batch.BatchBootstrapContext;
 import su.nightexpress.excellentcrates.crates.block.BlockCoreBootstrapContext;
 import su.nightexpress.excellentcrates.crates.block.component.BlockComponentBootstrapContext;
 import su.nightexpress.excellentcrates.crates.command.CrateCommandsContext;
+import su.nightexpress.excellentcrates.crates.command.CrateRedeemCommand;
 import su.nightexpress.excellentcrates.crates.config.CratesConfigBootstrapContext;
 import su.nightexpress.excellentcrates.crates.cooldown.CrateCooldownBootstrapContext;
 import su.nightexpress.excellentcrates.crates.data.CrateDataContext;
@@ -30,6 +31,7 @@ import su.nightexpress.excellentcrates.crates.hologram.HologramBootstrapContext;
 import su.nightexpress.excellentcrates.crates.hologram.editor.HologramEditorContext;
 import su.nightexpress.excellentcrates.crates.interact.InteractionBootstrapContext;
 import su.nightexpress.excellentcrates.crates.item.CrateItemBootstrapContext;
+import su.nightexpress.excellentcrates.crates.item.CratePackageService;
 import su.nightexpress.excellentcrates.crates.lang.CratesLang;
 import su.nightexpress.excellentcrates.crates.open.CrateOpenActionsBootstrapContext;
 import su.nightexpress.excellentcrates.crates.pipeline.CratePipelineBootstrapContext;
@@ -64,7 +66,7 @@ public final class CratesModuleBootstrap extends CrateModuleBootstrap {
         InteractionBootstrapContext interactionContext = new InteractionBootstrapContext(plugin);
 
         CrateItemBootstrapContext itemContext = new CrateItemBootstrapContext(
-            plugin, coreUI, dispatcher, crates, interactionContext.interactionService
+            plugin, coreUI, dispatcher, dependencies.userService(), crates, interactionContext.interactionService
         );
 
         CrateEditorContext editorContext = new CrateEditorContext(
@@ -141,6 +143,13 @@ public final class CratesModuleBootstrap extends CrateModuleBootstrap {
             PipelineStageOrder.PRE_PROCESS_ITEM_TAKE,
             itemContext.getTakeStage()
         );
+
+        this.bridge.requireAvailable(CoreServices.KEYS, keysApi -> {
+            CratePackageService packageService = new CratePackageService(plugin, itemContext.api, keysApi.getBalanceAPI());
+            itemContext.setPackageService(packageService);
+
+            commandsContext.commands.register(new CrateRedeemCommand(player -> keysApi.getBalanceAPI().redeemAll(player)));
+        });
 
         // -----------------------------------------
         // Initialize API Builder

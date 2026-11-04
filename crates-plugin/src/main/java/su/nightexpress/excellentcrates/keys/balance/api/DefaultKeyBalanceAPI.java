@@ -13,13 +13,17 @@ import su.nightexpress.excellentcrates.api.key.balance.IKeyBalance;
 import su.nightexpress.excellentcrates.api.key.balance.KeyBalanceAPI;
 import su.nightexpress.excellentcrates.keys.balance.KeyBalanceService;
 
+import su.nightexpress.excellentcrates.keys.balance.UnifiedRedeemService;
+
 @NullMarked
 public class DefaultKeyBalanceAPI implements KeyBalanceAPI {
 
-    private final KeyBalanceService balanceService;
+    private final KeyBalanceService    balanceService;
+    private final UnifiedRedeemService redeemService;
 
-    public DefaultKeyBalanceAPI(KeyBalanceService balanceService) {
+    public DefaultKeyBalanceAPI(KeyBalanceService balanceService, UnifiedRedeemService redeemService) {
         this.balanceService = balanceService;
+        this.redeemService = redeemService;
     }
 
     @Override
@@ -78,6 +82,11 @@ public class DefaultKeyBalanceAPI implements KeyBalanceAPI {
     }
 
     @Override
+    public boolean redeemAll(Player player) {
+        return this.redeemService.redeemAll(player);
+    }
+
+    @Override
     public ActionResult addKey(Player player, CrateKey key, int amount) {
         return balanceService.addKey(player, key, amount);
     }
@@ -95,5 +104,15 @@ public class DefaultKeyBalanceAPI implements KeyBalanceAPI {
     @Override
     public CompletableFuture<ActionResult> removeKeyAsync(UUID playerId, CrateKey key, int amount) {
         return balanceService.removeKeyAsync(playerId, key, amount);
+    }
+
+    @Override
+    public CompletableFuture<ActionResult> addUnclaimedAsync(UUID playerId, Identifier id, int amount) {
+        return balanceService.addUnclaimedAsync(playerId, id, amount);
+    }
+
+    @Override
+    public int takeUnclaimed(Player player, Identifier id, int amount) {
+        return balanceService.takeUnclaimed(player, id, amount);
     }
 }

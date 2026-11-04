@@ -310,4 +310,26 @@ public class KeyBalanceService {
             });
         }
     }
+
+    public CompletableFuture<ActionResult> addUnclaimedAsync(UUID playerId, Identifier id, int amount) {
+        int absAmount = Math.abs(amount);
+        CacheStrategy strategy = Players.getPlayer(playerId) != null ? CacheStrategy.PERMANENT : CacheStrategy.TEMPORARY;
+
+        return this.storageService.updateDataAndCreateIfAbsentAsync(playerId, id, strategy, storedKey -> {
+            storedKey.setUnclaimedAmount(storedKey.getUnclaimedAmount() + absAmount);
+            return ActionResult.ok();
+        });
+    }
+
+    public int takeUnclaimed(Player player, Identifier id, int amount) {
+        StoredKey storedKey = this.storageService.getCached(player.getUniqueId(), id).orElse(null);
+        if (storedKey == null || storedKey.getUnclaimedAmount() <= 0) {
+            return 0;
+        }
+
+        int toTake = Math.min(storedKey.getUnclaimedAmount(), Math.abs(amount));
+        storedKey.setUnclaimedAmount(storedKey.getUnclaimedAmount() - toTake);
+        this.storageService.markDirty(storedKey);
+        return toTake;
+    }
 }

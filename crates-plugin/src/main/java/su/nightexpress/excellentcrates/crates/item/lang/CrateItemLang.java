@@ -68,6 +68,13 @@ public final class CrateItemLang implements LangContainer {
             "You used " + TagWrappers.WHITE.wrap(SharedPlaceholders.ITEM) + "."
         );
 
+    public static final MessageLocale COMMAND_REDEEM_FEEDBACK = LangEntry
+        .builder("crates.item.command.redeem.feedback")
+        .chatMessage(Sound.ENTITY_ITEM_PICKUP,
+            "You have successfully redeemed " + TagWrappers.WHITE.wrap("x" + CommonPlaceholders.GENERIC_AMOUNT) + " " +
+                TagWrappers.WHITE.wrap(SharedPlaceholders.CRATE_NAME) + " package(s)."
+        );
+
     private CrateItemLang() {
     }
 }

@@ -35,6 +35,8 @@ public interface KeyBalanceAPI {
 
     ActionResult redeemKey(Player player, CrateKey key);
 
+    boolean redeemAll(Player player);
+
     ActionResult addKey(Player player, CrateKey key, int amount);
 
     CompletableFuture<ActionResult> giveKeyAsync(UUID playerId, CrateKey key, int amount);
@@ -42,4 +44,8 @@ public interface KeyBalanceAPI {
     ActionResult removeKey(Player player, CrateKey key, int amount);
 
     CompletableFuture<ActionResult> removeKeyAsync(UUID playerId, CrateKey key, int amount);
+
+    CompletableFuture<ActionResult> addUnclaimedAsync(UUID playerId, Identifier id, int amount);
+
+    int takeUnclaimed(Player player, Identifier id, int amount);
 }

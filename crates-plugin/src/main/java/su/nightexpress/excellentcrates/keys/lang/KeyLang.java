@@ -41,7 +41,7 @@ public final class KeyLang implements LangContainer {
 
     public static final TextLocale COMMAND_REDEEM_DESCRIPTION = LangEntry
         .builder("keys.command.redeem.description")
-        .text("Redeems your unclaimed keys.");
+        .text("Redeems your unclaimed keys and packages.");
 
     public static final MessageLocale COMMAND_SYNTAX_INVALID_KEY = LangEntry
         .builder("keys.command.syntax.invalid_key")
@@ -153,7 +153,7 @@ public final class KeyLang implements LangContainer {
 
     public static final MessageLocale KEY_REDEEM_NO_KEYS = LangEntry
         .builder("keys.key.redeem.no_keys")
-        .chatMessage("You have no keys to redeem.");
+        .chatMessage("You have no keys or packages to redeem.");
 
     public static final MessageLocale KEY_REDEEM_NO_UNCLAIMED = LangEntry
         .builder("keys.key.redeem.no_unclaimed")
