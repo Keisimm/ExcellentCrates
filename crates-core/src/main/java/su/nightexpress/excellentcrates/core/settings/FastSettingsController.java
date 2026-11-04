@@ -44,7 +44,7 @@ public class FastSettingsController<T> implements PluginComponent {
 
     @Override
     public void start() {
-
+        this.loadSettings();
     }
 
     @Override

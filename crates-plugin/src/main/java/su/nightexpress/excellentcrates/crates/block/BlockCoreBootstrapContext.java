@@ -69,7 +69,7 @@ public final class BlockCoreBootstrapContext extends NamedBootstrapContext {
         KeyDomain keyDomain = plugin.keyDomain();
         Path settingsPath = plugin.configPath().resolve(SETTINGS_FILE);
         SettingsProvider<BlockSettings> settings = new SettingsProvider<>(BlockSettings.defaults());
-        this.addComponent(new FastSettingsController<>(settingsPath, BlockSettings::loadFrom, settings));
+        this.addComponent(FastSettingsController.createAndLoad(settingsPath, BlockSettings::loadFrom, settings));
 
         this.positions = new DefaultCratePositionRegistry(crateRegistry);
 

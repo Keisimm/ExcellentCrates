@@ -35,7 +35,7 @@ public class RewardsConfigBootstrapContext extends NamedBootstrapContext {
         plugin.registerPermissions(RewardPerms.ROOT);
 
         SettingsProvider<RewardCoreSettings> provider = new SettingsProvider<>(RewardCoreSettings.defaults());
-        this.addComponent(new FastSettingsController<>(settingsPath, RewardCoreSettings::loadFrom, provider));
+        this.addComponent(FastSettingsController.createAndLoad(settingsPath, RewardCoreSettings::loadFrom, provider));
 
         this.settings = provider;
         this.modules = this.settings.get().modules();

@@ -29,7 +29,7 @@ public class CratesConfigBootstrapContext extends NamedBootstrapContext {
 
         Path settingsPath = plugin.configPath().resolve(SETTINGS_FILE_NAME);
         SettingsProvider<CrateCoreSettings> provider = new SettingsProvider<>(CrateCoreSettings.defaults());
-        this.addComponent(new FastSettingsController<>(settingsPath, CrateCoreSettings::loadFrom, provider));
+        this.addComponent(FastSettingsController.createAndLoad(settingsPath, CrateCoreSettings::loadFrom, provider));
 
         this.settings = provider;
         this.modules = provider.get().modules();
