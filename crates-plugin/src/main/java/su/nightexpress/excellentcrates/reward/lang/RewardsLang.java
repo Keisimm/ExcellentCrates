@@ -48,4 +48,11 @@ public class RewardsLang implements LangContainer {
         .chatMessage("You won " + TagWrappers.WHITE.wrap(SharedPlaceholders.REWARD_NAME) + " from " +
             TagWrappers.WHITE.wrap(SharedPlaceholders.CRATE_NAME) + "!"
         );
+
+    public static final MessageLocale GRANT_ERROR_INVENTORY_FULL = LangEntry
+        .builder("rewards.grant.error.inventory_full")
+        .chatMessage(Sound.ENTITY_VILLAGER_NO,
+            "Your inventory is full! Make space before opening " +
+                TagWrappers.WHITE.wrap(SharedPlaceholders.CRATE_NAME) + "."
+        );
 }

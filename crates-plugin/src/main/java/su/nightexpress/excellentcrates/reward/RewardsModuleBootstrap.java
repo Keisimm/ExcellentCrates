@@ -32,6 +32,7 @@ import su.nightexpress.excellentcrates.reward.feature.cooldown.RewardCooldownBoo
 import su.nightexpress.excellentcrates.reward.feature.limit.RewardLimitsBootstrapContext;
 import su.nightexpress.excellentcrates.reward.grant.RewardGrantBootstrapContext;
 import su.nightexpress.excellentcrates.reward.items.RewardItemsBootstrapContext;
+import su.nightexpress.excellentcrates.reward.pipeline.RewardInventoryValidationStage;
 import su.nightexpress.excellentcrates.reward.placeholder.RewardPlaceholderService;
 import su.nightexpress.excellentcrates.reward.preview.RewardPreviewBootstrapContext;
 import su.nightexpress.excellentcrates.reward.quota.RewardQuotaBootstapContext;
@@ -164,6 +165,11 @@ public class RewardsModuleBootstrap extends CrateModuleBootstrap {
                 PipelinePhase.ROLL,
                 PipelineStageOrder.ROLL_REWARDS,
                 evaluationContext.getEvaluationPipelineStage()
+            );
+            cratesApi.pipeline().registerStage(
+                PipelinePhase.VALIDATION,
+                PipelineStageOrder.VALIDATE_INVENTORY,
+                new RewardInventoryValidationStage(dispatcher, cratesApi.items(), () -> services.get(CoreServices.KEYS))
             );
             cratesApi.data().registerExtension(componentContext.getCrateDataExtension());
             cratesApi.editor().registerExtension(componentContext.getCrateEditorExtension());

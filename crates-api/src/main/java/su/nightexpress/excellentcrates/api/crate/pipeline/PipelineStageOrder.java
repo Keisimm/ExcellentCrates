@@ -19,8 +19,9 @@ public final class PipelineStageOrder {
 
     public static final int MODIFICATION_REWARD_LIMITS = 100;
 
-    public static final int VALIDATE_COST = 100;
-    public static final int VALIDATE_ITEM = 200;
+    public static final int VALIDATE_COST      = 100;
+    public static final int VALIDATE_ITEM      = 200;
+    public static final int VALIDATE_INVENTORY = 300;
 
     public static final int PRE_PROCESS_COST_TAKE   = 100;
     public static final int PRE_PROCESS_CRATE_QUOTA = 150;

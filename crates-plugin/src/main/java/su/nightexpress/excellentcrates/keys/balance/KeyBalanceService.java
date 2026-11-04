@@ -118,15 +118,35 @@ public class KeyBalanceService {
         }
 
         int unclaimed = storedKey.getUnclaimedAmount();
-        ActionResult result = this.addKey(player, key, unclaimed);
-        if (!result.success()) {
-            return result;
+        if (key.getBase().isVirtual()) {
+            storedKey.setVirtualBalance(storedKey.getVirtualBalance() + unclaimed);
+            storedKey.setUnclaimedAmount(0);
+            this.storageService.markDirty(storedKey);
+
+            return ActionResult.ok(KeyLang.KEY_REDEEM_FEEDBACK, ctx -> ctx
+                .with(CommonPlaceholders.GENERIC_AMOUNT, () -> NumberUtil.format(unclaimed))
+            );
         }
-        storedKey.setUnclaimedAmount(0);
+
+        ItemStack keyItem = this.itemService.createTaggedItem(key).orElse(null);
+        if (keyItem == null) {
+            return ActionResult.fail(KeyLang.ERROR_ITEM_CREATION_FAILED);
+        }
+
+        int space = InventoryUtils.countInventorySpace(player, keyItem);
+        if (space <= 0) {
+            return ActionResult.fail(KeyLang.ERROR_INVENTORY_SPACE);
+        }
+
+        int toRedeem = Math.min(space, unclaimed);
+        keyItem.setAmount(toRedeem);
+        Players.addItem(player, keyItem);
+
+        storedKey.setUnclaimedAmount(unclaimed - toRedeem);
         this.storageService.markDirty(storedKey);
 
         return ActionResult.ok(KeyLang.KEY_REDEEM_FEEDBACK, ctx -> ctx
-            .with(CommonPlaceholders.GENERIC_AMOUNT, () -> NumberUtil.format(unclaimed))
+            .with(CommonPlaceholders.GENERIC_AMOUNT, () -> NumberUtil.format(toRedeem))
         );
     }
 
@@ -151,7 +171,23 @@ public class KeyBalanceService {
 
             int space = InventoryUtils.countInventorySpace(player, keyItem);
             if (space < absAmount) {
-                return ActionResult.fail(KeyLang.ERROR_INVENTORY_SPACE);
+                int toGive = Math.max(0, space);
+                int toUnclaimed = absAmount - toGive;
+
+                if (toGive > 0) {
+                    keyItem.setAmount(toGive);
+                    Players.addItem(player, keyItem);
+                }
+
+                StoredKey storedKey = this.storageService.getCachedOrCreate(
+                    player.getUniqueId(), key.getId(), CacheStrategy.PERMANENT
+                );
+                storedKey.setUnclaimedAmount(storedKey.getUnclaimedAmount() + toUnclaimed);
+                this.storageService.markDirty(storedKey);
+
+                return ActionResult.ok(KeyLang.KEY_GIVE_FEEDBACK, ctx -> ctx
+                    .with(CommonPlaceholders.GENERIC_AMOUNT, () -> NumberUtil.format(absAmount))
+                );
             }
 
             keyItem.setAmount(absAmount);
