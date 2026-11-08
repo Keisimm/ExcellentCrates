@@ -37,6 +37,18 @@ public final class CrateItemLang implements LangContainer {
                 TagWrappers.WHITE.wrap(CommonPlaceholders.PLAYER_NAME) + "."
         );
 
+    public static final TextLocale COMMAND_GIVE_ALL_DESCRIPTION = LangEntry
+        .builder("crates.item.command.giveall.description")
+        .text("Give crate items to all online players.");
+
+    public static final MessageLocale CRATE_GIVE_ALL_FEEDBACK = LangEntry
+        .builder("crates.item.command.giveall.feedback")
+        .chatMessage(Sound.ENTITY_ITEM_PICKUP,
+            "Gave " + TagWrappers.WHITE.wrap("x" + CommonPlaceholders.GENERIC_AMOUNT) + " " +
+                TagWrappers.WHITE.wrap(SharedPlaceholders.CRATE_NAME) + " to all online players (" +
+                TagWrappers.WHITE.wrap(SharedPlaceholders.TOTAL) + " total)."
+        );
+
     public static final TextLocale COMMAND_DROP_DESCRIPTION = LangEntry
         .builder("crates.item.command.drop.description")
         .text("Drop crate item in the world.");

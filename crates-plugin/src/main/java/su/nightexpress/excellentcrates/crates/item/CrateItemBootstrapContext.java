@@ -24,6 +24,7 @@ import su.nightexpress.excellentcrates.crates.interact.CrateInteractionService;
 import su.nightexpress.excellentcrates.crates.item.api.StandardCrateItemAPI;
 import su.nightexpress.excellentcrates.crates.item.command.CrateItemDropCommand;
 import su.nightexpress.excellentcrates.crates.item.command.CrateItemGetCommand;
+import su.nightexpress.excellentcrates.crates.item.command.CrateItemGiveAllCommand;
 import su.nightexpress.excellentcrates.crates.item.command.CrateItemGiveCommand;
 import su.nightexpress.excellentcrates.crates.item.editor.CrateItemEditorBootstrapContext;
 import su.nightexpress.excellentcrates.crates.item.factory.CrateItemFactory;
@@ -101,6 +102,7 @@ public class CrateItemBootstrapContext extends NamedBootstrapContext {
 
         this.commands.add(new CrateItemGetCommand(itemService, dispatcher));
         this.commands.add(new CrateItemGiveCommand(itemService, () -> this.packageService, userDataService, dispatcher));
+        this.commands.add(new CrateItemGiveAllCommand(itemService, () -> this.packageService, dispatcher));
         this.commands.add(new CrateItemDropCommand(itemService, dispatcher));
     }
 

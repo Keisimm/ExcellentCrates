@@ -41,6 +41,10 @@ public class UnifiedRedeemService {
     }
 
     public boolean redeemAll(Player player) {
+        return this.redeemAll(player, true);
+    }
+
+    public boolean redeemAll(Player player, boolean notifyIfEmpty) {
         boolean anyRedeemed = false;
         boolean hadUnclaimed = false;
 
@@ -78,7 +82,7 @@ public class UnifiedRedeemService {
             }
         }
 
-        if (!hadUnclaimed) {
+        if (!hadUnclaimed && notifyIfEmpty) {
             this.keyDispatcher.send(player, KeyLang.KEY_REDEEM_NO_KEYS);
             return false;
         }

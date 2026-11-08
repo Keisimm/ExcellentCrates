@@ -1,6 +1,7 @@
 package su.nightexpress.excellentcrates.crates.item.permission;
 
 import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 import org.jspecify.annotations.NullMarked;
 
 import su.nightexpress.excellentcrates.core.crate.permission.CratePerms;
@@ -12,9 +13,11 @@ public final class CrateItemPerms {
     public static final PermissionNamespace ROOT    = CratePerms.ROOT.namespace("item");
     public static final PermissionNamespace COMMAND = ROOT.namespace("command");
 
-    public static final Permission COMMAND_GET  = COMMAND.create("get");
-    public static final Permission COMMAND_GIVE = COMMAND.create("give");
-    public static final Permission COMMAND_DROP = COMMAND.create("drop");
+    public static final Permission COMMAND_GET               = COMMAND.create("get");
+    public static final Permission COMMAND_GIVE              = COMMAND.create("give");
+    public static final Permission COMMAND_GIVE_ALL          = COMMAND.create("giveall");
+    public static final Permission COMMAND_GIVE_ALL_INCLUDED = COMMAND.create("giveall.included", PermissionDefault.TRUE);
+    public static final Permission COMMAND_DROP              = COMMAND.create("drop");
 
     private CrateItemPerms() {
     }

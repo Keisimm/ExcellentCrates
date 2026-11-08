@@ -41,7 +41,7 @@ public class KeyAutoRedeemController extends BaseController {
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         if (player.hasPermission(KeyPerms.AUTO_REDEEM)) {
-            this.redeemService.redeemAll(player);
+            this.redeemService.redeemAll(player, false);
         }
     }
 }

@@ -55,6 +55,35 @@ public class CratePackageService {
         return this.balanceAPI.countUnclaimedKeys(player, toPackageId(crate));
     }
 
+    public ActionResult givePackage(Player player, Crate crate, int amount) {
+        Identifier packageId = toPackageId(crate);
+        int absAmount = Math.abs(amount);
+
+        ActionResult success = ActionResult.ok(CrateItemLang.COMMAND_GIVE_FEEDBACK, ctx -> ctx
+            .with(CommonPlaceholders.GENERIC_AMOUNT, () -> NumberUtil.format(absAmount))
+        );
+
+        ItemStack itemStack = this.itemAPI.createTaggedItem(crate);
+        int space = InventoryUtils.countInventorySpace(player, itemStack);
+
+        if (space >= absAmount) {
+            itemStack.setAmount(absAmount);
+            Players.addItem(player, itemStack);
+            return success;
+        }
+
+        int toGive = Math.max(0, space);
+        int toUnclaimed = absAmount - toGive;
+
+        if (toGive > 0) {
+            itemStack.setAmount(toGive);
+            Players.addItem(player, itemStack);
+        }
+
+        this.balanceAPI.addUnclaimedAsync(player.getUniqueId(), packageId, toUnclaimed);
+        return success;
+    }
+
     public CompletableFuture<ActionResult> givePackageAsync(UUID playerId, Crate crate, int amount) {
         Identifier packageId = toPackageId(crate);
         int absAmount = Math.abs(amount);
@@ -66,25 +95,7 @@ public class CratePackageService {
         return CompletableFuture.supplyAsync(() -> {
             Player player = Players.getPlayer(playerId);
             if (player != null) {
-                ItemStack itemStack = this.itemAPI.createTaggedItem(crate);
-                int space = InventoryUtils.countInventorySpace(player, itemStack);
-
-                if (space >= absAmount) {
-                    itemStack.setAmount(absAmount);
-                    Players.addItem(player, itemStack);
-                    return CompletableFuture.completedFuture(success);
-                }
-
-                int toGive = Math.max(0, space);
-                int toUnclaimed = absAmount - toGive;
-
-                if (toGive > 0) {
-                    itemStack.setAmount(toGive);
-                    Players.addItem(player, itemStack);
-                }
-
-                return this.balanceAPI.addUnclaimedAsync(playerId, packageId, toUnclaimed)
-                    .thenApply(res -> success);
+                return CompletableFuture.completedFuture(this.givePackage(player, crate, absAmount));
             }
 
             return this.balanceAPI.addUnclaimedAsync(playerId, packageId, absAmount)
